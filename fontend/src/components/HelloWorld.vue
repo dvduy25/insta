@@ -76,17 +76,16 @@ body, html {
 
 /* Card trung tâm */
 .card {
-  background: #ffffffdd; /* trắng trong suốt nhẹ */
-  backdrop-filter: blur(15px); /* làm mờ nền phía sau */
-  border-radius: 20px;
-  box-shadow:
-    0 10px 30px rgba(102, 126, 234, 0.3),
-    0 4px 15px rgba(118, 75, 162, 0.3);
-  padding: 2.5rem 3rem;
-  width: 100%;
+  
   max-width: 400px;
+  margin: 80px auto;
+  padding: 2.5rem 3rem;
+  border-radius: 1rem;
+  background: #ffffffdd;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3),
+    0 4px 15px rgba(118, 75, 162, 0.3);
   animation: fadeInUp 0.7s ease forwards;
-  transition: transform 0.3s ease;
 }
 
 .card:hover {

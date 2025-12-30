@@ -24,7 +24,9 @@ const imageFile = ref(null);
 const imageUrl = ref(null);
 
 const onFileChange = (event) => {
-  imageFile.value = event.target.files[0];
+  const file = event.target.files[0];
+  imageFile.value = file;
+  imageUrl.value = URL.createObjectURL(file); // Hiển thị trước ảnh
 };
 
 const upload = async () => {
@@ -34,7 +36,7 @@ const upload = async () => {
   }
 
   const formData = new FormData();
-  formData.append('image', imageFile.value);
+  formData.append('images', imageFile.value); 
 
   try {
     const token = localStorage.getItem('token');
@@ -45,12 +47,16 @@ const upload = async () => {
       },
     });
 
-    imageUrl.value = 'http://localhost:8080' + res.data.user.avatar;
+    const avatarPath = res.data.user.avatar;
+    imageUrl.value = avatarPath.startsWith('http')
+      ? avatarPath
+      : `http://localhost:8080${avatarPath}`;
   } catch (error) {
-    console.error('Lỗi khi upload ảnh:', error);
+    console.error('Lỗi khi upload ảnh:', error.response?.data || error);
     alert('Upload thất bại.');
   }
 };
+
 </script>
 
 <style scoped>

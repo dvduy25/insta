@@ -52,7 +52,8 @@ const otpp = async () => {
     });
     if (res.data.status === 200) {
       message.value = { text: "Đăng ký thành công!", type: "success" };
-      setTimeout(() => router.push("/login"), 1500);
+       router.push( "/upload" )
+      // setTimeout(() => router.push("/login"), 1500);
     } else {
       message.value = { text: res.data.error || "Lỗi không xác định", type: "danger" };
     }
