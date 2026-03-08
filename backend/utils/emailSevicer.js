@@ -1,35 +1,23 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require('resend');
+require('dotenv').config();
+
+// Khởi tạo Resend với API Key lấy từ biến môi trường
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async (to, subject, htmlContent) => {
-  // Cấu hình ép buộc dùng port 465 an toàn và thiết lập thời gian chờ
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Bắt buộc true với port 465
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    // Chống treo server trên Render
-    connectionTimeout: 10000, // 10 giây
-    socketTimeout: 10000,
-    greetingTimeout: 10000,
-  });
-
-  const mailOptions = {
-    from: `"Hệ thống Xác Thực" <${process.env.EMAIL_USER}>`,
-    to: to,
-    subject: subject,
-    html: htmlContent,
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email đã được gửi thành công:", info.response);
-    return info;
+    const data = await resend.emails.send({
+      from: 'Hệ thống Xác Thực <onboarding@resend.dev>', // Bắt buộc dùng email này ở gói Free
+      to: to,
+      subject: subject,
+      html: htmlContent,
+    });
+    
+    console.log("✅ Gửi email thành công qua Resend:", data.id);
+    return data;
   } catch (error) {
-    console.error("❌ Lỗi cấu hình Nodemailer hoặc bị Render chặn:", error);
-    throw error; // Ném lỗi để userController trả về status 500
+    console.error("❌ Lỗi khi gửi email bằng Resend:", error);
+    throw error;
   }
 };
 
