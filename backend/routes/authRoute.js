@@ -23,7 +23,7 @@ const userController = {
 
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
-      
+
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -49,7 +49,7 @@ const userController = {
           <h1 style="color: #d9534f; background: #f9f9f9; padding: 10px; display: inline-block;">${otp}</h1>
           <p>Mã có hiệu lực trong 5 phút.</p>
         </div>`;
-      
+
       await sendEmail(email, "Xác thực đăng ký - Mã OTP", htmlContent);
 
       return res.status(200).json({
@@ -98,7 +98,7 @@ const userController = {
 
       const accessToken = userController.generateAccessToken(user);
       const refreshToken = userController.generateRefreshToken(user);
-      
+
       refreshTokens.push(refreshToken);
 
       res.cookie("refreshToken", refreshToken, {
@@ -132,11 +132,11 @@ const userController = {
         refreshTokens = refreshTokens.filter(t => t !== refreshToken);
         return res.status(403).json("Token đã hết hạn");
       }
-      
+
       refreshTokens = refreshTokens.filter(t => t !== refreshToken);
       const newAccessToken = userController.generateAccessToken(user);
       const newRefreshToken = userController.generateRefreshToken(user);
-      
+
       refreshTokens.push(newRefreshToken);
       res.cookie("refreshToken", newRefreshToken, {
         httpOnly: true, secure: true, sameSite: "none", path: "/"
@@ -198,7 +198,7 @@ const userController = {
           type: 'follow', content: 'đã bắt đầu theo dõi bạn.'
         });
         await newNoti.populate('from', 'name avatar');
-        
+
         const io = req.app.get('io');
         if (io) io.to(targetUserId).emit('newNotification', newNoti);
       }
