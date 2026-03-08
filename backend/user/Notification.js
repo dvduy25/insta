@@ -8,7 +8,7 @@ const NotificationSchema = new mongoose.Schema({
     postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }, // dùng khi type là 'post', 'like', 'comment'
     content: String, // nội dung hiển thị (ví dụ: "đã thích bài viết của bạn")
     read: { type: Boolean, default: false },
-    entityType: { type: String, enum: ['Post', 'Message', 'User'], default: 'Post' }, // Loại đối tượng cần điều hướng
+    entityType: { type: String, enum: ['Post', 'Message', 'User'], default: 'Post' }, // Loại đối tượng cần điều hướn
 }, { timestamps: true });
 
 module.exports = mongoose.model('notification', NotificationSchema);
