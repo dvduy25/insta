@@ -221,119 +221,80 @@ const router = {
 
 
   do: async (req, res) => {
-
     try {
-
       const { name, email, password } = req.body;
 
-
-
-      const existing = await UserModel.findOne({ email });
-
-
-
-      if (existing && existing.verified) {
-
-        return res.status(400).json({ error: "Email đã được đăng ký và xác thực" });
-
+      // 1. Kiểm tra xem người dùng đã nhập đủ thông tin chưa
+      if (!name || !email || !password) {
+        return res.status(400).json({ error: "Vui lòng cung cấp đầy đủ tên, email và mật khẩu." });
       }
 
+      // 2. Kiểm tra xem email đã tồn tại trong hệ thống chưa
+      const existingUser = await UserModel.findOne({ email });
 
+      if (existingUser && existingUser.verified) {
+        return res.status(400).json({ error: "Email này đã được đăng ký và xác thực." });
+      }
 
+      // 3. Tạo mã OTP 6 chữ số và đặt thời gian hết hạn (5 phút)
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
       const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-
+      
+      // 4. Mã hóa mật khẩu
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       let user;
 
-
-
-      if (existing && !existing.verified) {
-
+      // 5. Cập nhật hoặc Tạo mới User
+      if (existingUser && !existingUser.verified) {
+        // Trường hợp user đã đăng ký nhưng chưa xác thực OTP (gửi lại yêu cầu)
         user = await UserModel.findOneAndUpdate(
-
           { email },
-
           { name, password: hashedPassword, otp, otpExpires, verified: false },
-
           { new: true }
-
         );
-
       } else {
-
+        // Trường hợp user hoàn toàn mới
         user = new UserModel({
-
           name,
-
           email,
-
           password: hashedPassword,
-
           otp,
-
           otpExpires,
-
           verified: false
-
         });
-
         await user.save();
-
       }
-
-
 
       if (!user) {
-
-        return res.status(500).json({ error: "Không thể tạo hoặc cập nhật người dùng" });
-
+        return res.status(500).json({ error: "Không thể tạo hoặc cập nhật thông tin người dùng." });
       }
 
+      // 6. Gửi email chứa mã OTP với giao diện HTML thân thiện hơn
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #4CAF50;">Xác thực tài khoản của bạn</h2>
+          <p>Xin chào <strong>${name}</strong>,</p>
+          <p>Cảm ơn bạn đã đăng ký. Mã OTP để xác thực tài khoản của bạn là:</p>
+          <h1 style="color: #d9534f; background-color: #f9f9f9; padding: 10px; display: inline-block; border-radius: 5px;">${otp}</h1>
+          <p>Mã này sẽ hết hiệu lực sau <strong>5 phút</strong>.</p>
+          <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+        </div>
+      `;
+      await sendEmail(email, "Xác thực đăng ký - Mã OTP", htmlContent);
 
-
-      // Gửi email OTP sau khi tạo hoặc cập nhật thành công
-
-      const html = `
-
-      <h2>Xác thực tài khoản</h2>
-
-      <p>Mã OTP của bạn là: <strong>${otp}</strong></p>
-
-      <p>Mã này có hiệu lực trong 5 phút.</p>
-
-    `;
-
-      await sendEmail(email, "Xác thực đăng ký - Mã OTP", html);
-
-
-
+      // 7. Trả về phản hồi thành công
       return res.status(200).json({
-
-
-
+        status: 200,
         success: true,
-
-        message: "Đã gửi OTP đến email. Vui lòng xác thực.",
-
-        status: 200
-
+        message: "Đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra hộp thư để xác thực."
       });
 
-
-
     } catch (err) {
-
-      console.error("Lỗi khi đăng ký:", err);
-
-      res.status(500).json({ error: "Lỗi server khi đăng ký" });
-
+      console.error("Lỗi trong quá trình đăng ký (registerUser):", err);
+      return res.status(500).json({ error: "Đã xảy ra lỗi máy chủ khi đăng ký tài khoản." });
     }
-
   },
 
 
