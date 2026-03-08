@@ -29,7 +29,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-   origin: ["http://localhost:3000", "https://duyinsta.netlify.app"],
+   origin: ["http://localhost:3000", "https://tangbe-17pj.vercel.app/"],
     credentials: true
   }
 });
@@ -37,7 +37,7 @@ const io = new Server(server, {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({ origin:  ["http://localhost:3000", "https://duyinsta.netlify.app"], credentials: true }));
+app.use(cors({ origin:  ["http://localhost:3000", "https://tangbe-17pj.vercel.app/"], credentials: true }));
 
 
 if (!process.env.mongodb_url) {
