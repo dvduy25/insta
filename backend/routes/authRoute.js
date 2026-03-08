@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const sendEmail = require("../utils/emailSevicer");
-const Notification = require("../user/notification"); // Đường dẫn tuỳ vào cấu trúc thư mục của bạn
+const Notification = require("../user/Notification"); // Đường dẫn tuỳ vào cấu trúc thư mục của bạn
 
 
 dotenv.config();

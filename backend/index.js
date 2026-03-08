@@ -19,7 +19,7 @@ const postController = require("./routes/authPosts");
 const messageController = require("./routes/authMessage");
 const Message = require('./user/message');
 const Conversation = require('./user/conversation');
-const Notification = require("./user/notification");
+const Notification = require("./user/Notification");
 const Logins = require("./user/userModel");
 
 

@@ -1,4 +1,4 @@
-const Notification = require("../user/notification"); // path phù hợp
+const Notification = require("../user/Notification"); // path phù hợp
 // nếu cần populate user info:
 const UserModel = require("../user/userModel");
 

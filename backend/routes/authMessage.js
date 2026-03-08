@@ -1,7 +1,7 @@
 const Conversation = require('../user/conversation');
 const Message = require('../user/message');
 const UserModel = require('../user/userModel');
-const Notification = require('../user/notification');
+const Notification = require('../user/Notification');
 const mongoose = require('mongoose');
 
 const messages = {

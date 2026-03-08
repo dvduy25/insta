@@ -3,7 +3,7 @@ const UserModel = require("../user/userModel");
 const mongoose = require('mongoose');
 const dotenv = require("dotenv");
 
-const Notification = require("../user/notification"); // Import model Notification
+const Notification = require("../user/Notification"); // Import model Notification
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 dotenv.config();
