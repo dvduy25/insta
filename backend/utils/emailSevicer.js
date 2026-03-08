@@ -6,7 +6,7 @@ const sendEmail = async (to, subject, html) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
-     port: 465, // Đổi từ 587 sang 465
+     port: 25, // Đổi từ 587 sang 465
   secure: true, // Bắt buộc là true khi dùng cổng 465 // Dùng TLS
       auth: {
         user: process.env.EMAIL_USER,
