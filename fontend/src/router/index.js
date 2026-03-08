@@ -27,7 +27,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 
-  // ✅ Giữ nguyên vị trí cuộn khi quay lại
+  // Giữ nguyên vị trí cuộn khi quay lại
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition

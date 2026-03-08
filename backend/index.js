@@ -29,7 +29,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+   origin: ["http://localhost:3000", "https://your-frontend.netlify.app"],
     credentials: true
   }
 });
@@ -37,7 +37,7 @@ const io = new Server(server, {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin:  ["http://localhost:3000", "https://your-frontend.netlify.app"], credentials: true }));
 
 
 if (!process.env.mongodb_url) {

@@ -5,7 +5,7 @@ const Notification = require('../user/notification');
 const mongoose = require('mongoose');
 
 const messages = {
-  // 🟢 Lấy hoặc tạo conversation 1-1
+
   getOrCreateConversation: async (req, res) => {
     try {
       const userId = req.user.id;
@@ -36,13 +36,13 @@ const messages = {
     }
   },
 
-  // 🟢 Gửi tin nhắn (text, ảnh, video)
+ 
   sendMessage: async (req, res) => {
     try {
       const senderId = req.user.id;
       let { conversationId, text, toUser, tempId } = req.body;
 
-      // 🖼️ Gộp ảnh & video
+   
        const attachments = [];
       if (req.files) {
         if (req.files.images) {
@@ -84,13 +84,12 @@ const messages = {
         readBy: [senderId],
       });
 
-      // 🔄 Cập nhật lastMessage
+
       await Conversation.findByIdAndUpdate(conversationId, {
         lastMessage: message._id,
         updatedAt: Date.now(),
       });
 
-      // 🔔 Thông báo cho người nhận
       await Notification.create({
         user: receiverId,
         type: 'message',
@@ -99,10 +98,9 @@ const messages = {
         content: `Bạn có tin nhắn mới từ ${req.user.name}`,
       });
 
-      // 👤 Populate sender
+
       await message.populate('sender', 'name avatar');
 
-      // ⚡ Emit realtime qua socket.io
       const io = req.app.get('io');
       if (io) {
         io.in(String(conversationId)).emit('receiveMessage', {
@@ -120,7 +118,7 @@ const messages = {
     }
   },
 
-  // 🟢 Lấy danh sách conversation
+
   getConversations: async (req, res) => {
     try {
       const userId = req.user.id;
@@ -158,7 +156,6 @@ const messages = {
     }
   },
 
-  // 🟢 Lấy tin nhắn trong conversation
   getMessages: async (req, res) => {
     try {
       const { conversationId } = req.params;
@@ -172,7 +169,7 @@ const messages = {
     }
   },
 
-  // 🟢 Đánh dấu đã đọc
+
   markReadConversation: async (req, res) => {
     try {
       const userId = req.user.id;
@@ -188,7 +185,7 @@ const messages = {
     }
   },
 
-  // 🟢 Xóa tin nhắn
+
   deleteMessage: async (req, res) => {
     try {
       const userId = req.user.id;
