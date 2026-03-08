@@ -6,12 +6,13 @@ const sendEmail = async (to, subject, html) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // Dùng TLS
+     port: 465, // Đổi từ 587 sang 465
+  secure: true, // Bắt buộc là true khi dùng cổng 465 // Dùng TLS
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS, // Mật khẩu ứng dụng 16 ký tự
       },
+      connectionTimeout: 10000,
     });
 
     const mailOptions = {
