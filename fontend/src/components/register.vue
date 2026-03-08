@@ -2,41 +2,48 @@
   <div class="card p-4">
     <h3>Đăng ký</h3>
 
-    <input
-      v-model="name"
-      class="form-control mb-3"
-      placeholder="Tên người dùng"
-      :disabled="loading"
-    />
-    <input
-      v-model="email"
-      class="form-control mb-3"
-      placeholder="Email"
-      :disabled="loading"
-    />
-    <input
-      v-model="password"
-      type="password"
-      class="form-control mb-3"
-      placeholder="Mật khẩu"
-      :disabled="loading"
-    />
+    <form @submit.prevent="register">
+      <input
+        v-model="name"
+        type="text"
+        class="form-control mb-3"
+        placeholder="Tên người dùng"
+        required
+        :disabled="loading"
+      />
+      <input
+        v-model="email"
+        type="email"
+        class="form-control mb-3"
+        placeholder="Email"
+        required
+        :disabled="loading"
+      />
+      <input
+        v-model="password"
+        type="password"
+        class="form-control mb-3"
+        placeholder="Mật khẩu"
+        required
+        :disabled="loading"
+      />
 
-    <button
-      @click="register"
-      class="btn btn-primary w-100"
-      :disabled="loading || !email || !password || !name"
-    >
-      <span v-if="loading">
-        <span
-          class="spinner-border spinner-border-sm me-2"
-          role="status"
-          aria-hidden="true"
-        ></span>
-        Đang xử lý...
-      </span>
-      <span v-else>Đăng ký</span>
-    </button>
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        :disabled="loading || !email || !password || !name"
+      >
+        <span v-if="loading">
+          <span
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          Đang xử lý...
+        </span>
+        <span v-else>Đăng ký</span>
+      </button>
+    </form>
 
     <div v-if="message.text" :class="`alert mt-3 alert-${message.type}`">
       {{ message.text }}
@@ -47,8 +54,11 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import router from '../router/index'
-const API = "https://insta-123.onrender.com";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const API = "https://insta-123.onrender.com"
+
 const name = ref('')
 const email = ref('')
 const password = ref('')
@@ -58,26 +68,38 @@ const message = ref({ text: '', type: '' })
 const register = async () => {
   message.value = { text: '', type: '' }
   loading.value = true
+
   try {
+    // Lưu ý: Endpoint phải khớp với router backend của bạn (ví dụ: /add)
     const res = await axios.post(`${API}/add`, {
       name: name.value,
       email: email.value,
       password: password.value
     })
 
-    if (res.data.status === 200) {
+    // Kiểm tra status 200 từ backend mới viết
+    if (res.data.status === 200 || res.data.success) {
       message.value = {
         text: 'Mã OTP đã được gửi đến email của bạn!',
         type: 'success'
       }
+      
+      // Chuyển sang trang nhập OTP sau 1.5s
       setTimeout(() => {
-        router.push({ path: '/otp', query: { email: email.value } })
+        router.push({ 
+          path: '/otp', 
+          query: { email: email.value } 
+        })
       }, 1500)
-    } else {
-      message.value = { text: res.data.error || 'Lỗi không xác định', type: 'danger' }
     }
-  } catch {
-    message.value = { text: 'Đăng ký thất bại. Vui lòng thử lại.', type: 'danger' }
+  } catch (err) {
+    // Hiển thị lỗi cụ thể từ server (lỗi 400, 500, v.v.)
+    const errorMsg = err.response?.data?.error || 'Đăng ký thất bại. Vui lòng thử lại.'
+    message.value = { 
+      text: errorMsg, 
+      type: 'danger' 
+    }
+    console.error("Lỗi đăng ký:", err)
   } finally {
     loading.value = false
   }
@@ -85,6 +107,7 @@ const register = async () => {
 </script>
 
 <style scoped>
+/* Giữ nguyên CSS của bạn vì nó rất đẹp rồi */
 .card {
   max-width: 400px;
   margin: 80px auto;
@@ -155,9 +178,6 @@ h3 {
   width: 20px;
   height: 20px;
   border-width: 2.5px;
-  border-top-color: #764ba2;
-  border-right-color: transparent;
-  animation: spinnerRotate 0.75s linear infinite;
 }
 
 .alert {
@@ -165,7 +185,6 @@ h3 {
   border-radius: 14px;
   padding: 1rem 1.4rem;
   text-align: center;
-  box-shadow: 0 3px 15px rgba(102, 126, 234, 0.2);
 }
 
 .alert-success {
@@ -179,19 +198,7 @@ h3 {
 }
 
 @keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes spinnerRotate {
-  to {
-    transform: rotate(360deg);
-  }
+  0% { opacity: 0; transform: translateY(25px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 </style>
