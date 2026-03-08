@@ -150,10 +150,11 @@ export default {
   components: { Sidebar },
   setup() {
     const route = useRoute();
+    const API = "https://insta-123.onrender.com";
     const userStr = localStorage.getItem("user");
     const me = ref(userStr ? JSON.parse(userStr) : {});
     const token = localStorage.getItem("token");
-    const socket = io("http://localhost:8080", { auth: { token } });
+    const socket = io(`${API}`, { auth: { token } });
 
     const conversations = ref([]);
     const activeConversation = ref(null);
@@ -176,8 +177,8 @@ export default {
        const senderId = getAnyId(sender);
        return String(senderId) === String(myId);
     };
-    const getAvatar = (avatar) => avatar ? `http://localhost:8080${avatar}` : "/default-avatar.png";
-    const getFileUrl = (file) => file && file.startsWith("http") ? file : `http://localhost:8080${file}`;
+    const getAvatar = (avatar) => avatar ? `${API}${avatar}` : "/default-avatar.png";
+    const getFileUrl = (file) => file && file.startsWith("http") ? file : `${API}${file}`;
     const formatTimeAgo = () => 'vừa xong';
     const formatFullTime = (d) => new Date(d).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'numeric' });
     const shouldShowTime = (i) => i === 0;
@@ -190,7 +191,7 @@ export default {
     // --- API & LOGIC ---
     const fetchConversations = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/conversations", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get(`${API}/conversations`, { headers: { Authorization: `Bearer ${token}` } });
         conversations.value = (res.data.conversations || []);
         if (route.query.conversationId) {
            const target = conversations.value.find(c => c._id === route.query.conversationId);
@@ -205,7 +206,7 @@ export default {
       activeConversation.value = conv;
       socket.emit("joinConversation", conv._id);
       try {
-        const res = await axios.get(`http://localhost:8080/conversation/${conv._id}/messages`, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get(`${API}/conversation/${conv._id}/messages`, { headers: { Authorization: `Bearer ${token}` } });
         messages.value = res.data.messages.map((m) => ({...m, sender: m.sender || { _id: m.senderId }}));
         scrollToBottom();
       } catch (err) { console.error(err); }
@@ -223,7 +224,7 @@ export default {
       files.value.forEach(f => f.type.startsWith("video/") ? formData.append("videos", f) : formData.append("images", f));
       formData.append("tempId", tempId);
       try {
-        const res = await axios.post("http://localhost:8080/message/send", formData, { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } });
+        const res = await axios.post(`${API}/message/send`, formData, { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } });
         const idx = messages.value.findIndex(m => m.tempId === tempId);
         if (idx !== -1) messages.value[idx] = res.data.message;
       } catch (err) { console.error(err); } finally { text.value = ""; files.value = []; previewFiles.value = []; }

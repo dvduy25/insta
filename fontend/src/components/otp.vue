@@ -35,7 +35,7 @@ import { ref } from "vue";
 import axios from "axios";
 import router from "../router/index";
 import { useRoute } from "vue-router";
-
+const API = "https://insta-123.onrender.com";
 const route = useRoute();
 const otp = ref("");
 const loading = ref(false);
@@ -46,7 +46,7 @@ const otpp = async () => {
   message.value = { text: "", type: "" };
   loading.value = true;
   try {
-    const res = await axios.post("http://localhost:8080/otp", {
+    const res = await axios.post(`${API}/otp`, {
       otp: otp.value,
       email: email,
     });

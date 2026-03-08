@@ -108,7 +108,7 @@ const MAX_SIZE_MB = 20
 // User info
 const userStr = localStorage.getItem("user");
 const me = ref(userStr ? JSON.parse(userStr) : {});
-
+const API = "https://insta-123.onrender.com";
 const content = ref('')
 const imageFiles = ref([])
 const imagePreviews = ref([])
@@ -119,7 +119,7 @@ const uploadProgress = ref(0)
 
 const hasMedia = computed(() => imageFiles.value.length > 0 || videoFile.value !== null);
 
-const getImageUrl = (path) => path?.startsWith('http') ? path : `http://localhost:8080${path || ''}`;
+const getImageUrl = (path) => path?.startsWith('http') ? path : `${API}${path || ''}`;
 
 // Xử lý chọn file (Gộp chung ảnh và video để tiện)
 const onFileChange = (e) => {
@@ -197,7 +197,7 @@ const createPost = async () => {
 
   try {
     loading.value = true;
-    const res = await axios.post('http://localhost:8080/', formData, {
+    const res = await axios.post(`${API}/`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data'

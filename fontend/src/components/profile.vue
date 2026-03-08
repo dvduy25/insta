@@ -247,13 +247,13 @@ const currentModalIndex = ref(0);
 const currentMedia = ref(null); 
 const currentSlide = ref({}); 
 const commentTexts = ref({}); 
-
+const API = "https://insta-123.onrender.com";
 // Options Modal State (Cho xóa bài viết)
 const isOptionsOpen = ref(false);
 const optionsPost = ref(null);
 
 // --- Helper Functions ---
-const getImageUrl = (path) => path?.startsWith("http") ? path : `http://localhost:8080${path || ''}`;
+const getImageUrl = (path) => path?.startsWith("http") ? path : `${API}${path || ''}`;
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN') : '';
 const isFollowing = (id) => Array.isArray(followingIds.value) && followingIds.value.includes(id);
 const goToProfile = (id) => { if (id) router.push(`/profile/${id}`) }
@@ -294,7 +294,7 @@ const deletePost = async (postId) => {
   
   try {
     const token = localStorage.getItem("token");
-    await axios.delete(`http://localhost:8080/${postId}`, {
+    await axios.delete(`${API}/${postId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -364,7 +364,7 @@ const addCommentToSidebar = async () => {
   if (!content?.trim()) return;
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post(`http://localhost:8080/${postId}/comment`, { content }, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await axios.post(`${API}/${postId}/comment`, { content }, { headers: { Authorization: `Bearer ${token}` } });
     const post = posts.value.find((p) => p._id === postId);
     const newComment = { _id: res.data?.commentId || Date.now(), user: { _id: currentUserId.value, name: user.value.name, avatar: user.value.avatar }, content };
     if (post) { post.comments = post.comments || []; post.comments.push(newComment); selectedPost.value = { ...post }; }
@@ -389,7 +389,7 @@ const fetchUserInfo = async () => {
   try {
     const token = localStorage.getItem("token");
     const userId = route.params.id;
-    const res = await axios.get(`http://localhost:8080/profile/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await axios.get(`${API}/profile/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
     user.value = res.data.user;
     currentUserId.value = res.data.currentUserId;
     followingIds.value = res.data.followingIds || [];
@@ -404,7 +404,7 @@ const fetchPosts = async (pageNum = 1) => {
   try {
     const token = localStorage.getItem("token");
     const userId = route.params.id;
-    const res = await axios.get(`http://localhost:8080/profile/${userId}?page=${pageNum}&limit=${limit}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await axios.get(`${API}/profile/${userId}?page=${pageNum}&limit=${limit}`, { headers: { Authorization: `Bearer ${token}` } });
     const newPosts = res.data.posts.map((p) => {
         const isLiked = p.likes?.some((like) => like._id === currentUserId.value);
         return { ...p, isLiked: isLiked }
@@ -426,7 +426,7 @@ const toggleLike = async (post) => {
     const index = post.likes.findIndex(l => (l._id || l) === uid);
     if (index > -1) post.likes.splice(index, 1);
   }
-  try { await axios.post(`http://localhost:8080/${post._id}/like`, {}, { headers: { Authorization: `Bearer ${token}` } }); } catch (err) { console.error(err); }
+  try { await axios.post(`${API}/${post._id}/like`, {}, { headers: { Authorization: `Bearer ${token}` } }); } catch (err) { console.error(err); }
 };
 
 const toggleFollow = async (targetId) => {
@@ -440,14 +440,14 @@ const toggleFollow = async (targetId) => {
     followingIds.value.push(targetId);
     if (user.value.followers) user.value.followers.push(currentUserId.value);
   }
-  try { await axios.post(`http://localhost:8080/follow/${targetId}`, {}, { headers: { Authorization: `Bearer ${token}` } }); } catch (err) { console.error(err); }
+  try { await axios.post(`${API}/${targetId}`, {}, { headers: { Authorization: `Bearer ${token}` } }); } catch (err) { console.error(err); }
 };
 
 const startConversation = async (receiverId) => {
   try {
     const token = localStorage.getItem("token");
     if (!token) return alert("Bạn cần đăng nhập để nhắn tin.");
-    const res = await axios.get(`http://localhost:8080/conversation/${receiverId}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await axios.get(`${API}/conversation/${receiverId}`, { headers: { Authorization: `Bearer ${token}` } });
     if (res.data?.conversation) router.push({ path: "/message", query: { conversationId: res.data.conversation._id } });
   } catch (e) { console.error(e); alert("Không thể tạo cuộc trò chuyện"); }
 };

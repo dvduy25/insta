@@ -118,7 +118,7 @@ import { ref, onMounted, computed, onUnmounted } from "vue";
 import axios from "axios";
 import { useRoute, useRouter } from "vue-router";
 import Sidebar from "../components/Sidebar.vue";
-
+const API = "https://insta-123.onrender.com";
 const route = useRoute();
 const router = useRouter();
 
@@ -151,7 +151,7 @@ const mediaList = computed(() => {
 const currentMedia = computed(() => mediaList.value[currentMediaIndex.value]);
 
 // --- Utilities ---
-const getImageUrl = (path) => path?.startsWith("http") ? path : `http://localhost:8080${path || ''}`;
+const getImageUrl = (path) => path?.startsWith("http") ? path : `${API}${path || ''}`;
 
 const formatTimeAgo = (date) => {
   const d = new Date(date);
@@ -172,7 +172,7 @@ const fetchPost = async () => {
   try {
     const token = localStorage.getItem("token");
     const id = route.params.id;
-    const res = await axios.get(`http://localhost:8080/post/${id}`, {
+    const res = await axios.get(`${API}/post/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     post.value = res.data;
@@ -192,7 +192,7 @@ const toggleLike = async () => {
   likeCount.value += liked.value ? 1 : -1;
   const token = localStorage.getItem("token");
   try {
-    await axios.post(`http://localhost:8080/${post.value._id}/like`, {}, {
+    await axios.post(`${API}/${post.value._id}/like`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     });
   } catch (e) { console.error(e); }
@@ -202,7 +202,7 @@ const addComment = async () => {
   if (!newComment.value.trim()) return;
   const token = localStorage.getItem("token");
   try {
-    await axios.post(`http://localhost:8080/${post.value._id}/comment`, 
+    await axios.post(`${API}/${post.value._id}/comment`, 
       { content: newComment.value }, 
       { headers: { Authorization: `Bearer ${token}` } }
     );

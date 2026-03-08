@@ -92,12 +92,12 @@ export default {
     const token = localStorage.getItem("token");
     const userStr = localStorage.getItem("user");
     const me = ref(userStr ? JSON.parse(userStr) : {});
-    
+    const API = "https://insta-123.onrender.com";
     const notifications = ref([]);
-    const socket = io("http://localhost:8080", { auth: { token } });
+    const socket = io(`${API}`, { auth: { token } });
 
     // Utility: Lấy URL ảnh (Avatar hoặc Post Image)
-    const getImageUrl = (path) => path?.startsWith('http') ? path : `http://localhost:8080${path || ''}`;
+    const getImageUrl = (path) => path?.startsWith('http') ? path : `${API}${path || ''}`;
 
     // Helper: Lấy ảnh thumbnail từ object postId (Cần backend populate 'postId')
     const getPostImage = (postObj) => {
@@ -128,7 +128,7 @@ export default {
 
     const fetchNotifications = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/notifications", {
+        const res = await axios.get(`${API}/notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         notifications.value = res.data.notifications || [];
@@ -137,7 +137,7 @@ export default {
 
     const markAsRead = async (id) => {
       try {
-        await axios.put(`http://localhost:8080/notifications/${id}/read`, {}, {
+        await axios.put(`${API}/notifications/${id}/read`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const n = notifications.value.find(x => x._id === id);
@@ -147,7 +147,7 @@ export default {
 
     const markAllAsRead = async () => {
       try {
-        await axios.put(`http://localhost:8080/notifications/read-all`, {}, {
+        await axios.put(`${API}/notifications/read-all`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         notifications.value.forEach(n => n.read = true);
@@ -158,7 +158,7 @@ export default {
     const deleteNotification = async (id) => {
       if(!confirm("Bạn có chắc muốn xóa thông báo này?")) return;
       try {
-        await axios.delete(`http://localhost:8080/notifications/${id}`, {
+        await axios.delete(`${API}/notifications/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Xóa khỏi danh sách local
@@ -192,7 +192,7 @@ export default {
     const handleFollowBack = async (userId) => {
         // Gọi API follow (Logic giống trang profile)
         try {
-            await axios.post(`http://localhost:8080/follow/${userId}`, {}, {
+            await axios.post(`${API}/follow/${userId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert("Đã gửi yêu cầu theo dõi!");

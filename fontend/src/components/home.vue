@@ -238,7 +238,7 @@ const noMore = ref(false)
 const commentTexts = ref({})
 const followingIds = ref([])
 const scrollKey = 'feed-scroll-position'
-
+const API = "https://insta-123.onrender.com";
 // Sidebar & Modal States
 const isSidebarOpen = ref(false) // Sidebar Bình luận
 const isSearchOpen = ref(false)  // Sidebar Tìm kiếm
@@ -249,6 +249,7 @@ const currentPost = ref(null)
 const currentModalIndex = ref(0) 
 const currentMedia = ref(null) 
 const currentSlide = ref({}); 
+
 
 // Options Modal State (Cho xóa/đi tới bài viết)
 const isOptionsOpen = ref(false);
@@ -283,7 +284,7 @@ const toggleSearch = () => {
 }
 
 // --- Helper Functions ---
-const getImageUrl = (path) => path?.startsWith('http') ? path : `http://localhost:8080${path || ''}`
+const getImageUrl = (path) => path?.startsWith('http') ? path : `${API}${path || ''}`
 
 const formatDate = (d) => {
   if (!d) return ''
@@ -322,7 +323,7 @@ const deletePost = async (postId) => {
   
   try {
     const token = localStorage.getItem("token");
-    await axios.delete(`http://localhost:8080/${postId}`, {
+    await axios.delete(`${API}/${postId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -410,7 +411,7 @@ onActivated(() => {
 const fetchUser = async () => {
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get('http://localhost:8080/duy123', { headers: { Authorization: `Bearer ${token}` } })
+    const res = await axios.get(`${API}/duy123`, { headers: { Authorization: `Bearer ${token}` } })
     user.value = res.data?.use || {}
     followingIds.value = user.value.following || []
   } catch (e) { console.error(e) }
@@ -421,7 +422,7 @@ const fetchPosts = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get(`http://localhost:8080?page=${page.value}&limit=${limit}`, { headers: { Authorization: `Bearer ${token}` } })
+    const res = await axios.get(`${API}?page=${page.value}&limit=${limit}`, { headers: { Authorization: `Bearer ${token}` } })
     const newPosts = res.data?.posts || []
     if (newPosts.length === 0) noMore.value = true
     else {
@@ -458,7 +459,7 @@ const likePost = async (postId) => {
 
   try {
     const token = localStorage.getItem('token')
-    await axios.post(`http://localhost:8080/${postId}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
+    await axios.post(`${API}/${postId}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
   } catch { console.error('Like failed') }
 }
 const isLiked = (post) => post.likes?.includes(user.value._id)
@@ -468,7 +469,7 @@ const toggleFollow = async (id) => {
   else followingIds.value.push(id)
 
   const token = localStorage.getItem('token')
-  try { await axios.post(`http://localhost:8080/follow/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } }) } catch { console.error('Follow failed') }
+  try { await axios.post(`${API}/follow/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } }) } catch { console.error('Follow failed') }
 }
 const isFollowing = (id) => followingIds.value.includes(id)
 
@@ -481,7 +482,7 @@ const addCommentToSidebar = async () => {
   if (!content?.trim()) return;
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post(`http://localhost:8080/${postId}/comment`, { content }, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await axios.post(`${API}/${postId}/comment`, { content }, { headers: { Authorization: `Bearer ${token}` } });
     const post = posts.value.find((p) => p._id === postId);
     if (post) {
       post.comments = post.comments || [];

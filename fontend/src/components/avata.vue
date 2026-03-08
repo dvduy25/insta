@@ -19,7 +19,7 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-
+const API = "https://instaclone-api.onrender.com";
 const imageFile = ref(null);
 const imageUrl = ref(null);
 
@@ -40,7 +40,7 @@ const upload = async () => {
 
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.post('http://localhost:8080/upload', formData, {
+    const res = await axios.post(`${API}/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -50,7 +50,7 @@ const upload = async () => {
     const avatarPath = res.data.user.avatar;
     imageUrl.value = avatarPath.startsWith('http')
       ? avatarPath
-      : `http://localhost:8080${avatarPath}`;
+      : `${API}${avatarPath}`;
   } catch (error) {
     console.error('Lỗi khi upload ảnh:', error.response?.data || error);
     alert('Upload thất bại.');

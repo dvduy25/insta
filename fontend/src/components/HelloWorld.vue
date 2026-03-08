@@ -32,11 +32,11 @@ const name = ref('')
 const password = ref('')
 const user = ref(null)
 const loading = ref(false)
-
+const API = "https://insta-123.onrender.com";
 const login = async () => {
   loading.value = true
   try {
-    const res = await axios.post('http://localhost:8080/login', {
+    const res = await axios.post(`${API}/login`, {
       name: name.value,
       password: password.value
     }, {

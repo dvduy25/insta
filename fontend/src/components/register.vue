@@ -48,7 +48,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import router from '../router/index'
-
+const API = "https://insta-123.onrender.com";
 const name = ref('')
 const email = ref('')
 const password = ref('')
@@ -59,7 +59,7 @@ const register = async () => {
   message.value = { text: '', type: '' }
   loading.value = true
   try {
-    const res = await axios.post('http://localhost:8080/add', {
+    const res = await axios.post(`${API}/add`, {
       name: name.value,
       email: email.value,
       password: password.value

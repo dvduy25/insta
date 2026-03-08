@@ -139,14 +139,14 @@ const props = defineProps({
 // Định nghĩa event để component cha (home.vue) có thể lắng nghe
 
 const emit = defineEmits(['toggleSearch']);
-
+const API = "https://insta-123.onrender.com";
 
 
 const router = useRouter();
 
 
 
-const getImageUrl = (path) => path?.startsWith('http') ? path : `http://localhost:8080${path || ''}`;
+const getImageUrl = (path) => path?.startsWith('http') ? path : `${API}${path || ''}`;
 
 
 
